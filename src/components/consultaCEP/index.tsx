@@ -24,7 +24,7 @@ const  ConsultaCEP: React.FC = () => {
 
  const onBlurCEP = useCallback((event:any) => {
       const { value } = event.target;
-      axios.get(`${api}/csp/buscacep/consulta/${value}`)
+      axios.get(`${api}/csp/cepRest/${value}`)
       .then((response) => {
         if(response.status === 200){
           const { message } = response.data
