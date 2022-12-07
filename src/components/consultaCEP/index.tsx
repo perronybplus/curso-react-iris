@@ -3,7 +3,7 @@ import React, { useCallback, useState } from 'react';
 import InputField from '../InputField';
 
 interface IObjectForm {
-  id: string;
+  //id: string;
   cep: string;
   localidade: string;
   uf: string;
@@ -23,39 +23,38 @@ const  ConsultaCEP: React.FC = () => {
  const [ numero, setNumero ] = useState<string>(''); 
 
  const onBlurCEP = useCallback((event:any) => {
-      const { value } = event.target;
-      axios.get(`${api}/csp/cepRest/${value}`)
-      .then((response) => {
-        if(response.status === 200){
-          const { message } = response.data
-          setForm(message);
-          console.log(response);
-        }
-         
-      }).catch((error) => {
-        console.log(error);
-      })
-      
- },[]); 
+
+  const { value } = event.target;
+  axios.get(`${api}/csp/cepRest/${value}`)
+  .then((response) => {
+    if(response.status === 200){
+      setForm(response.data);
+      console.log(response);
+    }
+  }).catch((error) => {
+    console.log(error);
+  })
+
+},[]);
 
  const handleSubmit = useCallback((e:any) => {
-    e.preventDefault();
-    
+  e.preventDefault();
+  if(form.cep) {
     const params = {
-       'descricao' : descricao,
-       'cep': form.cep,
-       'numero': numero,
-       'complemento': form.complemento
-    }
+      'descricao' : descricao,
+      'cep': form.cep,
+      'numero': numero,
+      'complemento': form.complemento
+   }
 
-    axios.post(`${api}/csp/buscacep/cadastra/`,params)
-    .then((res) => {
-       console.log(res);
-    }).catch((error) => {
-      console.log(error);
-    })
-
-  },[descricao, form,  numero]);
+   axios.post(`${api}/csp/buscacep/cadastra/`,params)
+   .then((res) => {
+      console.log(res);
+   }).catch((error) => {
+     console.log(error);
+   })
+  }
+},[descricao, form,  numero]);
 
  return (
    <div>
@@ -70,7 +69,7 @@ const  ConsultaCEP: React.FC = () => {
             name="descricao"
             placeholder="Informe uma descrição do endereço"
             handleChange={(e) => {setDescricao(e.target.value)}}
-          />
+/>
       </div>
 
       </div>
@@ -80,7 +79,7 @@ const  ConsultaCEP: React.FC = () => {
             type="number"
             label="CEP"
             name="cep"
-            value={form.cep}
+            value={form.cep ? form.cep : undefined}
             placeholder="Informe o CEP"
             handleBlur={onBlurCEP}
           />
