@@ -3,7 +3,7 @@ import React, { useCallback, useState } from 'react';
 import InputField from '../InputField';
 
 interface IObjectForm {
-  //id: string;
+  id: string;
   cep: string;
   localidade: string;
   uf: string;
@@ -16,96 +16,95 @@ interface IObjectForm {
 
 const api = process.env.REACT_APP_API_URL
 
-const  ConsultaCEP: React.FC = () => {
+const ConsultaCEP: React.FC = () => {
 
- const [ form, setForm ] = useState<IObjectForm>({} as IObjectForm);
- const [ descricao, setDescricao ] = useState<string>('');
- const [ numero, setNumero ] = useState<string>(''); 
+  const [form, setForm] = useState<IObjectForm>({} as IObjectForm);
+  const [descricao, setDescricao] = useState<string>('');
+  const [numero, setNumero] = useState<string>('');
 
- const onBlurCEP = useCallback((event:any) => {
+  const onBlurCEP = useCallback((event: any) => {
 
-  const { value } = event.target;
-  axios.get(`${api}/csp/cepRest/${value}`)
-  .then((response) => {
-    if(response.status === 200){
-      setForm(response.data);
-      console.log(response);
+    const { value } = event.target;
+    axios.get(`${api}/csp/cepRest/${value}`)
+      .then((response) => {
+        if (response.status === 200) {
+          setForm(response.data);
+          console.log(response);
+        }
+      }).catch((error) => {
+        console.log(error);
+      })
+
+  }, []);
+
+  const handleSubmit = useCallback((e: any) => {
+    e.preventDefault();
+    if (form.cep) {
+      const params = {
+        'descricao': descricao,
+        'cep': form.cep,
+        'numero': numero,
+        'complemento': form.complemento
+      }
+
+      axios.post(`${api}/csp/buscacep/cadastra/`, params)
+        .then((res) => {
+          console.log(res);
+        }).catch((error) => {
+          console.log(error);
+        })
     }
-  }).catch((error) => {
-    console.log(error);
-  })
+  }, [descricao, form, numero]);
 
-},[]);
+  return (
+    <div>
+      <h3>Consulta CEP - BPlus IRIS-React</h3>
+      <form onSubmit={handleSubmit} >
+        {/* <div className='row'>
 
- const handleSubmit = useCallback((e:any) => {
-  e.preventDefault();
-  if(form.cep) {
-    const params = {
-      'descricao' : descricao,
-      'cep': form.cep,
-      'numero': numero,
-      'complemento': form.complemento
-   }
+          <div className='col-lg-12'>
+            <InputField
+              type="text"
+              label="Descrição"
+              name="descricao"
+              placeholder="Informe uma descrição do endereço"
+              handleChange={(e) => { setDescricao(e.target.value) }} />
+          </div>
 
-   axios.post(`${api}/csp/buscacep/cadastra/`,params)
-   .then((res) => {
-      console.log(res);
-   }).catch((error) => {
-     console.log(error);
-   })
-  }
-},[descricao, form,  numero]);
-
- return (
-   <div>
-   <h3>Consulta CEP - Bplus IRIS-React</h3>
-  <form onSubmit={handleSubmit}>
-      <div className='row'>
-
-      <div className='col-lg-12'>
-         <InputField
-            type="text"
-            label="Descrição"
-            name="descricao"
-            placeholder="Informe uma descrição do endereço"
-            handleChange={(e) => {setDescricao(e.target.value)}}
-/>
-      </div>
-
-      </div>
-      <div className='row'>
-        <div className='col-lg-3'>
-          <InputField
-            type="number"
-            label="CEP"
-            name="cep"
-            value={form.cep ? form.cep : undefined}
-            placeholder="Informe o CEP"
-            handleBlur={onBlurCEP}
-          />
+        </div> */}
+        <div className='row'>
+          <div className='col-lg-3'>
+            <InputField
+              type="text"
+              label="CEP"
+              name="cep"
+              value={form.cep}
+              placeholder="Informe o CEP"
+              handleBlur={onBlurCEP}
+            />
+          </div>
+          <div className='col-lg-7'>
+            <InputField
+              type="text"
+              label="Cidade"
+              name="localidade"
+              placeholder="Informe a cidade"
+              value={form.localidade}
+            />
+          </div>
+          <div className='col-lg-2'>
+            <InputField
+              type="text"
+              label="Estado"
+              name="uf"
+              placeholder="Informe o estado"
+              value={form.uf}
+            />
+          </div>
         </div>
-        <div className='col-lg-7'>
-          <InputField
-          type="text"
-          label="Cidade"
-          name="localidade"
-          placeholder="Informe a cidade"
-          value={form.localidade}
-          />
-        </div>
-        <div className='col-lg-2'>
-          <InputField
-            type="text"
-            label="Estado"
-            name="uf"
-            placeholder="Informe o estado"
-            value={form.uf}
-          />
-        </div>
-      </div>
 
-      <div className='row'>
-        <div className='col-lg-6'>
+        <div className='row'>
+          <div className='col-lg-6'>
             <InputField
               type="text"
               label="Logradouro"
@@ -121,7 +120,7 @@ const  ConsultaCEP: React.FC = () => {
               label="Número"
               name="numero"
               placeholder="Informe o número"
-              handleChange={(e) => {setNumero(e.target.value)}}
+              handleChange={(e) => { setNumero(e.target.value) }}
             />
           </div>
 
@@ -134,10 +133,10 @@ const  ConsultaCEP: React.FC = () => {
               value={form.bairro}
             />
           </div>
-      </div>
+        </div>
 
-      <div className='row'>
-         <div className='col-lg-6'>
+        <div className='row'>
+          <div className='col-lg-6'>
             <InputField
               type="text"
               label="Complemento"
@@ -163,23 +162,23 @@ const  ConsultaCEP: React.FC = () => {
             />
           </div>
 
-      </div>
-     
-     <div className='row'>
-       <div className='col-lg-3'>
-          <button 
-            type="submit" 
-            className='btn btn-success'
-            style={{width: '150px'}}
-            >Salvar</button>
-       </div>
-      
+        </div>
 
-     </div>
-     
-  </form>
-  </div>
- );
+        {/* <div className='row'>
+          <div className='col-lg-3'>
+            <button
+              type="submit"
+              className='btn btn-success'
+              style={{ width: '150px' }}
+            >Salvar</button>
+          </div>
+
+
+        </div> */}
+
+      </form>
+    </div>
+  );
 
 }
 
